@@ -33,7 +33,7 @@ $total_pages = ceil($total_users / $results_per_page);
 // Fetch users with LIMIT and OFFSET and WHERE clause
 $query = "SELECT * FROM (
     SELECT a.*, ROWNUM rnum FROM (
-        SELECT USERNAME, FULLNAME, WHCODE, FR_NAME, STATUS, JOB_TITLE, ROLE, E_MAIL, REGION, TELENUMBER, LAST_LOGIN, CREATION_DATE, LAST_LOGOUT FROM sp_users " . $where_clause . "
+        SELECT ID, USERNAME, FULLNAME, WHCODE, FR_NAME, STATUS, JOB_TITLE, ROLE, E_MAIL, REGION, TELENUMBER, LAST_LOGIN, CREATION_DATE, LAST_LOGOUT FROM sp_users " . $where_clause . "
         ORDER BY CREATION_DATE desc
     ) a WHERE ROWNUM <= :max_rows
 ) WHERE rnum > :min_rows";
@@ -86,6 +86,7 @@ oci_close($DB);
                     <th>LAST_LOGIN</th>
                     <th>CREATION_DATE</th>
                     <th>LAST_LOGOUT</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -104,6 +105,7 @@ oci_close($DB);
                         <td><?php echo $user['LAST_LOGIN']; ?></td>
                         <td><?php echo $user['CREATION_DATE']; ?></td>
                         <td><?php echo $user['LAST_LOGOUT']; ?></td>
+                       <td><?php echo "<a href='edit_user.php?id=" . urlencode($user['ID']) . "'>Edit</a>"?></td>;
                     </tr>
                 <?php endforeach; ?>
             </tbody>

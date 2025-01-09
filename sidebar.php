@@ -20,7 +20,7 @@
             </a>
         </li>
         <li>
-            <a href="index.php?page=edit_user" class="nav-link <?php if (isset($_GET['page']) && $_GET['page'] == 'edit_user') echo 'active'; ?>">
+            <a hidden href="index.php?page=edit_user" class="nav-link <?php if (isset($_GET['page']) && $_GET['page'] == 'edit_user') echo 'active'; ?>">
                 Edit User
             </a>
         </li>

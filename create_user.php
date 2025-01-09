@@ -41,23 +41,29 @@ oci_free_statement($groups_stid);
 
 $error_message = "";
 $success_message = "";
+$username = "";
+$fullname = "";
+$whcode = "";
+$job_title = "";
+$role = "";
+$telnumber = "";
+$groupid = "";
+$warehouse_search_term = isset($_GET['warehouse_search']) ? strtoupper(trim($_GET['warehouse_search'])) : '';
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data (sanitize input!)
-    $username = strtolower(trim($_POST['username']));
-    $fullname = trim($_POST['fullname']);
-    $whcode = trim($_POST['whcode']);
-    $fr_name = "";
-    $region = "";
-    $status = "1";
-    $job_title = trim($_POST['job_title']);
-    $role = trim($_POST['role']);
-    $email = '';
-    $telnumber = trim($_POST['telnumber']);
-    // $is_admin = isset($_POST['is_admin']) ? 1 : 0;
-    $groupid = trim($_POST['groupid']); // Get groupid from the dropdown
+    $username = isset($_POST['username']) ? htmlspecialchars(trim($_POST['username'])) : '';
+    $fullname = isset($_POST['fullname']) ? htmlspecialchars(trim($_POST['fullname'])) : '';
+    $whcode = isset($_POST['whcode']) ? htmlspecialchars(trim($_POST['whcode'])) : '';
+    $job_title = isset($_POST['job_title']) ? htmlspecialchars(trim($_POST['job_title'])) : '';
+    $role = isset($_POST['role']) ? htmlspecialchars(trim($_POST['role'])) : '';
+    $telnumber = isset($_POST['telnumber']) ? htmlspecialchars(trim($_POST['telnumber'])) : '';
+    $groupid = isset($_POST['groupid']) ? htmlspecialchars(trim($_POST['groupid'])) : '';
+    
     // Validation
-    if (empty($username) || !preg_match('/^[a-zA-Z0-9]+$/', $username)) {
+    if (empty($username) || !preg_match('/^[a-zA-Z0-9.-]+$/', $username)) {
         $error_message = "Username is required and can only contain uppercase letters and numbers.";
     } else {
         $email =$username. "@mtn.sd"; // Add "@mtn.sd" to the username
@@ -141,19 +147,9 @@ oci_close($DB);
 <?php if (!empty($success_message)): ?>
     <div class="alert alert-success"><?php echo $success_message; ?></div>
 <?php endif; ?>
-
 <form method="post">
-    <div class="mb-3">
-        <label for="username" class="form-label">Username* (e.g., USER123)</label>
-        <input type="text" class="form-control" id="username" name="username" required>
-        <div class="form-text"></div>
-    </div>
-    <div class="mb-3">
-        <label for="fullname" class="form-label">Fullname*</label>
-        <input type="text" class="form-control" id="fullname" name="fullname" required>
-    </div>
-
-    <div class="mb-3">
+    
+<div class="mb-3">
         <label for="warehouse_search" class="form-label">Search Warehouse:</label>
         <div class="input-group">
             <input type="text" class="form-control" id="warehouse_search" name="warehouse_search" value="<?php echo htmlspecialchars($warehouse_search_term); ?>">
@@ -164,53 +160,54 @@ oci_close($DB);
         <select class="form-select" id="whcode" name="whcode" required>
             <option value="">Select a Warehouse</option>
             <?php foreach ($warehouses as $warehouse): ?>
-                <option value="<?php echo htmlspecialchars($warehouse['WH_CODE']); ?>">
+                <option value="<?php echo htmlspecialchars($warehouse['WH_CODE']); ?>" <?php if ($whcode == $warehouse['WH_CODE']) echo 'selected'; ?>>
                     <?php echo htmlspecialchars($warehouse['WH_NAME']) . " (" . htmlspecialchars($warehouse['WH_CODE']) . ")"; ?>
                 </option>
             <?php endforeach; ?>
         </select>
     </div>
-    <script>
-        function filterWarehouses() {
-            var searchTerm = document.getElementById('warehouse_search').value;
-            window.location.href = '?page=create_user&warehouse_search=' + encodeURIComponent(searchTerm);
-        }
-    </script>
-<div class="mb-3">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username*</label>
+        <input type="text" class="form-control" id="username" name="username" value="<?php echo $username; ?>" required>
+    </div>
+    <div class="mb-3">
+        <label for="fullname" class="form-label">Fullname*</label>
+        <input type="text" class="form-control" id="fullname" name="fullname" value="<?php echo $fullname; ?>" required>
+    </div>
+
+        <div class="mb-3">
         <label for="groupid" class="form-label">Group*</label>
         <select class="form-select" id="groupid" name="groupid" required>
             <option value="">Select a Group</option>
             <?php foreach ($groups as $group): ?>
-                <option value="<?php echo htmlspecialchars($group['GROUPID']); ?>">
+                <option value="<?php echo htmlspecialchars($group['GROUPID']); ?>" <?php if ($groupid == $group['GROUPID']) echo 'selected'; ?>>
                     <?php echo htmlspecialchars($group['JOB_DESC']) . " (" . htmlspecialchars($group['GROUPID']) . ")"; ?>
                 </option>
             <?php endforeach; ?>
         </select>
     </div>
-
-    <!-- <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="status" name="status">
-        <label class="form-check-label" for="status">Active</label>
-    </div>
-        <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
-        <label class="form-check-label" for="is_admin">Is Admin</label>
-    </div> -->
     <div class="mb-3">
         <label for="job_title" class="form-label">Job Title</label>
-        <input type="text" class="form-control" id="job_title" name="job_title">
+        <input type="text" class="form-control" id="job_title" name="job_title" value="<?php echo $job_title; ?>">
     </div>
     <div class="mb-3">
         <label for="role" class="form-label">Role</label>
-        <input type="text" class="form-control" id="role" name="role">
+        <input type="text" class="form-control" id="role" name="role" value="<?php echo $role; ?>">
     </div>
-    <!-- <div class="mb-3">
-        <label for="email" class="form-label">E-mail</label>
-        <input type="email" class="form-control" id="email" name="email">
-    </div> -->
     <div class="mb-3">
         <label for="telnumber" class="form-label">Tel Number</label>
-        <input type="text" class="form-control" id="telnumber" name="telnumber">
+        <input type="text" class="form-control" id="telnumber" name="telnumber" value="<?php echo $telnumber; ?>">
     </div>
     <button type="submit" class="btn btn-primary">Create User</button>
 </form>
+
+<script>
+    function filterWarehouses() {
+        var searchTerm = document.getElementById('warehouse_search').value;
+                // Preserve form data
+        var formData = new FormData(document.querySelector('form'));
+        var params = new URLSearchParams(formData);
+        window.location.href = '?page=create_user&warehouse_search=' + encodeURIComponent(searchTerm) + '&' + params.toString();
+
+    }
+</script>

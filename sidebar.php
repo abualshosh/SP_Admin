@@ -10,9 +10,8 @@
             </a>
         </li>
         <li>
-            <a href="index.php?page=list_users" class="nav-link <?php if (isset($_GET['page']) && $_GET['page'] == 'list_users') echo 'active'; ?>">
-                List Users
-            </a>
+            <a href="index.php?page=terminate_user" class="nav-link <?php if (isset($_GET['page']) && $_GET['page'] == 'terminate_user') echo 'active'; ?>">
+            terminate_user            </a>
         </li>
         <li>
             <a href="index.php?page=create_user" class="nav-link <?php if (isset($_GET['page']) && $_GET['page'] == 'create_user') echo 'active'; ?>">
